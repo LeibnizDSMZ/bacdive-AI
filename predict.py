@@ -17,26 +17,25 @@ config = vars(args)
 
 # define constants
 EVALUE = 1e-20
-MODELPATH = os.path.dirname(__file__)+"/models/M_"
+MODELPATH = os.path.dirname(__file__)+"/models/"
 
 # set up all available models
 traits = {
+    "acidophile": 'Acidophilic',
     "gram-positive": 'Gram-positive',
     "spore-forming": 'Spore-forming',
     "aerobic": 'Aerobic',
     "anaerobic": 'Anaerobic',
     "thermophile": 'Thermophilic',
-    "halophile": 'Halophilic',
-    'motile': 'Motile',
-    "flagellated": 'Flagellated',
-    "glucose-util": 'Glucose-utilizing',
-    "glucose-ferment": 'Glucose-fermenting',
+    "psychrophile": 'Psychrophilic',
+    "motile2+": 'Flagellated motility',
 }
 
 # check if selected trait is supported
 trait = config.get('trait')
 if trait != 'all' and trait not in traits:
     print(trait, 'is not supported')
+    print('Supported traits are:', ', '.join(list(traits.keys())))
     exit()
 
 # load pfam data set
@@ -60,7 +59,7 @@ for trait in traits:
     label = traits[trait]
 
     # load model
-    dump = pickle.load(open(MODELPATH+trait + ".p", "rb"))
+    dump = pickle.load(open(MODELPATH + trait + "_data.p", "rb"))
     clf = dump.get('model')
     categories = dump.get("categories")
     strains = dump.get('strains')
@@ -77,5 +76,5 @@ for trait in traits:
     true_index = list(clf.classes_).index(y)
 
     # print result
-    result = f"{trait}: {bool(y)} ({round(proba[true_index]*100, 2)}%)"
+    result = f"{label}: {bool(y)} ({round(proba[true_index]*100, 2)}%)"
     print(result)
